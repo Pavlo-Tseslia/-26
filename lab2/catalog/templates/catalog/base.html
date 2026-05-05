@@ -27,5 +27,24 @@
     <footer>
         <p>&copy; 2026 Універсальний каталог товарів. Всі права захищені.</p>
     </footer>
+
+<nav>
+    <a href="{% url 'index' %}">Головна</a>
+    <a href="{% url 'about' %}">Про нас</a>
+    <a href="{% url 'contact' %}">Контакти</a>
+    |
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">Особистий кабінет ({{ user.username }})</a>
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Вийти</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Увійти</a>
+        <a href="{% url 'register' %}">Реєстрація</a>
+        <a href="{% url 'password_reset' %}">Забули пароль?</a>
+    {% endif %}
+</nav>
+
 </body>
 </html>

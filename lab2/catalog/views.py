@@ -3,7 +3,9 @@ from django.shortcuts import render
 # Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Avg
-from .models import Product, Category, Review, NewsletterSubscriber
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from .models import Product, Category, Review, NewsletterSubscriber, Order
 
 # Create your views here.
 
@@ -58,3 +60,25 @@ def category_products(request, category_id):
         'products': products,
         'title': category.name
     })
+
+# В'юшка для реєстрації нового юзера
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+# Особистий кабінет
+@login_required
+def profile(request):
+    if request.user.is_staff:
+        # Адмін бачить всі замовлення у базі
+        orders = Order.objects.all()
+    else:
+        # Звичайний користувач бачить пустий список або заглушку (якщо замовлення не прив'язані до User)
+        orders = []
+    return render(request, 'catalog/profile.html', {'orders': orders})
