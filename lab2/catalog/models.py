@@ -34,3 +34,13 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Замовлення №{self.id}"
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True, verbose_name="Email для розсилки")
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+
+class Review(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.IntegerField(choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')], verbose_name="Оцінка")
+    comment = models.TextField(verbose_name="Коментар")
+    created_at = models.DateTimeField(auto_now_add=True)

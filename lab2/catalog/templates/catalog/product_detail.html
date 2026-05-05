@@ -9,15 +9,35 @@
 {% extends 'catalog/base.html' %}
 {% block content %}
 <h2>{{ product.title }}</h2>
-{% if product.image %}
-    <img src="{{ product.image.url }}" alt="{{ product.title }}" style="max-width: 300px;">
-{% endif %}
-<p><strong>Опис:</strong> {{ product.description }}</p>
-<p><strong>Ціна:</strong> {{ product.price }} грн</p>
-<button disabled>Купити</button>
-<br><br>
-<a href="{% url 'index' %}">Повернутися на головну</a>
-{% endblock %}
+<p>Ціна: {{ product.price }} грн</p>
 
+<h3>Середній бал: {% if average_rating %}{{ average_rating|floatformat:1 }} / 5{% else %}Немає оцінок{% endif %}</h3>
+
+<form method="POST">
+    {% csrf_token %}
+    <h4>Залишити відгук та оцінку:</h4>
+    <label for="rating">Оцінка:</label>
+    <select name="rating" id="rating">
+        <option value="5">5 ★</option>
+        <option value="4">4 ★</option>
+        <option value="3">3 ★</option>
+        <option value="2">2 ★</option>
+        <option value="1">1 ★</option>
+    </select>
+    <br><br>
+    <textarea name="comment" rows="3" placeholder="Ваш коментар..." required></textarea>
+    <br>
+    <button type="submit" name="submit_review">Надіслати відгук</button>
+</form>
+
+<hr>
+
+<form method="POST" style="margin-top: 30px; background: #eaeaea; padding: 15px;">
+    {% csrf_token %}
+    <h4>Підпишіться на наші новини:</h4>
+    <input type="email" name="email" placeholder="Ваш email" required>
+    <button type="submit" name="subscribe">Підписатись</button>
+</form>
+{% endblock %}
 </body>
 </html>
