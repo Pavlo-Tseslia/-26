@@ -9,5 +9,29 @@
     <p>Тут знаходиться інформація про наш проект та команду.</p>
 
     <a href="{% url 'about' %}">Про нас</a> | <a href="{% url 'contact' %}">Контакти</a>
+    {% extends 'catalog/base.html' %}
+
+{% block title %}Головна сторінка{% endblock %}
+
+{% block content %}
+<h2>Список категорій</h2>
+<ul>
+    {% for category in categories %}
+        <li>{{ category.name }}</li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<h2>Наші товари</h2>
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    {% for product in products %}
+        <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; width: 200px;">
+            <h3>{{ product.title }}</h3>
+            <p>Ціна: {{ product.price }} грн</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
 </body>
 </html>

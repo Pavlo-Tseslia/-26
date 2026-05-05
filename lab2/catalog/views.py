@@ -2,9 +2,18 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render
+from .models import Product, Category
+
+# Create your views here.
 
 def index(request):
-    return render(request, 'catalog/index.html', {'title': 'Головна сторінка'})
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    return render(request, 'catalog/index.html', {
+        'categories': categories,
+        'products': products,
+        'title': 'Головна сторінка'
+    })
 
 def about(request):
     return render(request, 'catalog/about.html', {'title': 'Про нас'})

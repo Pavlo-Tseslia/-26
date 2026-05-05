@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Мій Сайт{% endblock %}</title>
+    <style>
+        header { background: #f4f4f4; padding: 20px; text-align: center; }
+        footer { background: #333; color: white; padding: 20px; text-align: center; margin-top: 50px; }
+        nav a { margin: 0 15px; text-decoration: none; font-weight: bold; }
+        .container { width: 80%; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'index' %}">Головна</a>
+            <a href="{% url 'about' %}">Про нас</a>
+            <a href="{% url 'contact' %}">Контакти</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Універсальний каталог товарів. Всі права захищені.</p>
+    </footer>
+</body>
+</html>
