@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{% extends 'catalog/base.html' %}
+{% block content %}
+<h2>Товари в категорії: {{ category.name }}</h2>
+<ul>
+    {% for product in products %}
+        <li>
+            <a href="{% url 'product_detail' product.id %}">{{ product.title }}</a> — {{ product.price }} грн
+        </li>
+    {% empty %}
+        <li>В цій категорії товарів поки немає.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'index' %}">На головну</a>
+{% endblock %}
+
+</body>
+</html>
