@@ -1,37 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h1>Про нас</h1>
-    <p>Тут знаходиться інформація про наш проект та команду.</p>
-
-    <a href="{% url 'about' %}">Про нас</a> | <a href="{% url 'contact' %}">Контакти</a>
-    {% extends 'catalog/base.html' %}
-
-{% block title %}Головна сторінка{% endblock %}
+{% extends 'catalog/base.html' %}
 
 {% block content %}
-<h2>Список категорій</h2>
-<ul>
-    {% for category in categories %}
-        <li>{{ category.name }}</li>
-    {% endfor %}
-</ul>
+    <h1>{{ title }}</h1>
+    
+    <h2>Наші категорії:</h2>
+    <ul>
+        {% for category in categories %}
+            <li>
+                <a href="{% url 'menu' %}">{{ category.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
 
-<hr>
-
-<h2>Наші товари</h2>
-<div style="display: flex; gap: 20px; flex-wrap: wrap;">
-    {% for product in products %}
-        <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; width: 200px;">
-            <h3>{{ product.title }}</h3>
-            <p>Ціна: {{ product.price }} грн</p>
-        </div>
-    {% endfor %}
-</div>
+    <hr>
+    <h2>Популярні страви:</h2>
+    <div class="products-grid">
+        {% for product in products %}
+            <div class="product-card">
+                <h3>{{ product.title }}</h3>
+                <p>{{ product.description }}</p>
+                <p>Ціна: {{ product.price }} грн</p>
+                <a href="{% url 'add_to_cart' product.id %}" class="btn">Замовити</a>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
-</body>
-</html>

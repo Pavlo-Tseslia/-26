@@ -1,14 +1,13 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, Category, CartItem, Order
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from .models import Product, Category, CartItem, Order
 
 
+# Головна сторінка
 def index(request):
     categories = Category.objects.all()
-    featured_products = Product.objects.all()[:6]  # Популярні страви
+    featured_products = Product.objects.all()[:6]
     return render(request, 'catalog/index.html', {
         'categories': categories,
         'products': featured_products,
@@ -16,6 +15,7 @@ def index(request):
     })
 
 
+# Меню ресторану
 def menu(request):
     categories = Category.objects.all()
     products = Product.objects.all()
@@ -26,8 +26,13 @@ def menu(request):
     })
 
 
+# Додавання у кошик
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    # Перевіряємо сесію, якщо користувач не залогінений
+    if not request.session.session_key:
+        request.session.create()
+
     cart_item, created = CartItem.objects.get_or_create(
         product=product,
         user=request.user if request.user.is_authenticated else None,
@@ -39,6 +44,7 @@ def add_to_cart(request, product_id):
     return redirect('view_cart')
 
 
+# Перегляд кошика
 def view_cart(request):
     if request.user.is_authenticated:
         items = CartItem.objects.filter(user=request.user)
@@ -49,15 +55,40 @@ def view_cart(request):
     return render(request, 'catalog/cart.html', {'items': items, 'total': total})
 
 
+# Оформлення замовлення
 def checkout(request):
     if request.method == 'POST':
-        # Тут буде логіка збереження замовлення
-        full_name = request.POST.get('full_name')
-        address = request.POST.get('address')
-        payment = request.POST.get('payment')
-        delivery = request.POST.get('delivery')
-
-        # Створюємо замовлення (спрощено)
         return render(request, 'catalog/success.html')
-
     return render(request, 'catalog/checkout.html')
+
+
+# Сторінки "Про нас" та "Контакти"
+def about(request):
+    return render(request, 'catalog/about.html', {'title': 'Про нас'})
+
+
+def contact(request):
+    return render(request, 'catalog/contact.html', {'title': 'Контакти'})
+
+
+# --- НОВИЙ КОД: Реєстрація та Профіль ---
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+
+@login_required
+def profile(request):
+    # Адмін бачить всі замовлення, користувач — тільки свої
+    if request.user.is_staff:
+        orders = Order.objects.all()
+    else:
+        orders = Order.objects.filter(user=request.user)
+    return render(request, 'catalog/profile.html', {'orders': orders})
