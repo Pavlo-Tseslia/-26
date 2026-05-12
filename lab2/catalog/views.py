@@ -2,6 +2,32 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .models import Product, Category, CartItem, Order
+from .models import Order, Product
+import json
+
+
+def success_view(request):
+    cart = request.session.get('cart', {})
+    if cart:
+        # Формуємо список страв для збереження в історію
+        items_list = []
+        total = 0
+        for p_id, item in cart.items():
+            items_list.append(f"{item['title']} (x{item['quantity']})")
+            total += float(item['price']) * item['quantity']
+
+        # Створюємо замовлення
+        Order.objects.create(
+            user=request.user,
+            items_json=", ".join(items_list),
+            total_price=total
+        )
+
+        # Очищаємо кошик
+        request.session['cart'] = {}
+        request.session.modified = True
+
+    return render(request, 'catalog/success.html')
 
 
 # Головна сторінка

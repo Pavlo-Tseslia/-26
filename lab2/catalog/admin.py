@@ -20,9 +20,10 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    # Поля моделі Order
-    list_display = ('full_name', 'payment_method', 'delivery_method', 'total_price', 'created_at')
-    list_filter = ('payment_method', 'delivery_method')
+    # Використовуємо лише ті поля, які є у вашій новій моделі Order
+    list_display = ('id', 'user', 'total_price', 'created_at')
+    list_filter = ('created_at', 'user')
+    search_fields = ('user__username', 'items_json')
 
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):

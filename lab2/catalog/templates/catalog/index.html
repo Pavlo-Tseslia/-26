@@ -1,27 +1,20 @@
 {% extends 'catalog/base.html' %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    
-    <h2>Наші категорії:</h2>
-    <ul>
-        {% for category in categories %}
-            <li>
-                <a href="{% url 'menu' %}">{{ category.name }}</a>
-            </li>
-        {% endfor %}
-    </ul>
-
-    <hr>
-    <h2>Популярні страви:</h2>
-    <div class="products-grid">
-        {% for product in products %}
-            <div class="product-card">
-                <h3>{{ product.title }}</h3>
-                <p>{{ product.description }}</p>
-                <p>Ціна: {{ product.price }} грн</p>
-                <a href="{% url 'add_to_cart' product.id %}" class="btn">Замовити</a>
-            </div>
-        {% endfor %}
+<div class="hero-section" style="text-align: center; padding: 40px 0; background: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1500') center/cover; color: white; border-radius: 15px; margin-bottom: 30px;">
+    <div style="background: rgba(0,0,0,0.5); padding: 40px; border-radius: 15px;">
+        <h1 style="border: none; color: white;">Смак справжньої Італії у вашому домі</h1>
+        <p>Найкраща піца на дровах та домашня паста</p>
+        <a href="{% url 'menu' %}" class="btn" style="background: #cd212a;">Відкрити меню</a>
     </div>
+</div>
+
+<h2>Популярні категорії:</h2>
+<div style="display: flex; gap: 20px; justify-content: center;">
+    {% for cat in categories %}
+        <div style="padding: 20px; border: 1px solid #ddd; border-radius: 10px; width: 150px; text-align: center;">
+            <a href="{% url 'menu' %}" style="text-decoration: none; color: #333; font-weight: bold;">{{ cat.name }}</a>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}
