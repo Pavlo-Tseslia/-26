@@ -2,83 +2,62 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Avg
-from django.contrib.auth.forms import UserCreationForm
+from .models import Product, Category, CartItem, Order
 from django.contrib.auth.decorators import login_required
-from .models import Product, Category, Review, NewsletterSubscriber, Order
 
-# Create your views here.
 
 def index(request):
     categories = Category.objects.all()
-    products = Product.objects.all()
+    featured_products = Product.objects.all()[:6]  # Популярні страви
     return render(request, 'catalog/index.html', {
         'categories': categories,
-        'products': products,
-        'title': 'Головна сторінка'
+        'products': featured_products,
+        'title': 'Ласкаво просимо до Bella Italia'
     })
 
-def about(request):
-    return render(request, 'catalog/about.html', {'title': 'Про нас'})
 
-def contact(request):
-    return render(request, 'catalog/contact.html', {'title': 'Контакти'})
+def menu(request):
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    return render(request, 'catalog/menu.html', {
+        'categories': categories,
+        'products': products,
+        'title': 'Наше Меню'
+    })
 
-# Детальна сторінка конкретного товару
-def product_detail(request, product_id):
+
+def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    reviews = product.reviews.all()
-    average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
+    cart_item, created = CartItem.objects.get_or_create(
+        product=product,
+        user=request.user if request.user.is_authenticated else None,
+        session_key=request.session.session_key if not request.user.is_authenticated else None
+    )
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+    return redirect('view_cart')
 
-    if request.method == 'POST':
-        # Форма оцінювання
-        if 'submit_review' in request.POST:
-            rating = request.POST.get('rating')
-            comment = request.POST.get('comment')
-            Review.objects.create(product=product, rating=rating, comment=comment)
-            return redirect('product_detail', product_id=product.id)
 
-        # Форма підписки на розсилку
-        elif 'subscribe' in request.POST:
-            email = request.POST.get('email')
-            NewsletterSubscriber.objects.get_or_create(email=email)
-            return redirect('product_detail', product_id=product.id)
-
-    return render(request, 'catalog/product_detail.html', {
-        'product': product,
-        'reviews': reviews,
-        'average_rating': average_rating,
-        'title': product.title
-    })
-
-# Сторінка товарів певної категорії
-def category_products(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
-    products = Product.objects.filter(category=category)
-    return render(request, 'catalog/category_products.html', {
-        'category': category,
-        'products': products,
-        'title': category.name
-    })
-
-# В'юшка для реєстрації нового юзера
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
+def view_cart(request):
+    if request.user.is_authenticated:
+        items = CartItem.objects.filter(user=request.user)
     else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
+        items = CartItem.objects.filter(session_key=request.session.session_key)
 
-# Особистий кабінет
-@login_required
-def profile(request):
-    if request.user.is_staff:
-        # Адмін бачить всі замовлення у базі
-        orders = Order.objects.all()
-    else:
-        # Звичайний користувач бачить пустий список або заглушку (якщо замовлення не прив'язані до User)
-        orders = []
-    return render(request, 'catalog/profile.html', {'orders': orders})
+    total = sum(item.product.price * item.quantity for item in items)
+    return render(request, 'catalog/cart.html', {'items': items, 'total': total})
+
+
+def checkout(request):
+    if request.method == 'POST':
+        # Тут буде логіка збереження замовлення
+        full_name = request.POST.get('full_name')
+        address = request.POST.get('address')
+        payment = request.POST.get('payment')
+        delivery = request.POST.get('delivery')
+
+        # Створюємо замовлення (спрощено)
+        return render(request, 'catalog/success.html')
+
+    return render(request, 'catalog/checkout.html')

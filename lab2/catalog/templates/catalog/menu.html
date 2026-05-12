@@ -1,0 +1,23 @@
+{% extends 'catalog/base.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<div class="menu-container">
+    {% for category in categories %}
+        <h2>{{ category.name }}</h2>
+        <div class="products-grid">
+            {% for product in products %}
+                {% if product.category == category %}
+                    <div class="product-card">
+                        <h3>{{ product.title }}</h3>
+                        <p>{{ product.description }}</p>
+                        <p><strong>Ціна: {{ product.price }} грн</strong></p>
+                        <a href="{% url 'add_to_cart' product.id %}" class="btn">Додати в кошик</a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

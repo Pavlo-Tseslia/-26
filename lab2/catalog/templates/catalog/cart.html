@@ -1,0 +1,26 @@
+{% extends 'catalog/base.html' %}
+
+{% block content %}
+<h1>Ваш кошик</h1>
+
+{% if items %}
+    <table>
+        <tr>
+            <th>Страва</th>
+            <th>Кількість</th>
+            <th>Ціна</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.title }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.product.price }} грн</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h3>Загальна сума: {{ total }} грн</h3>
+    <a href="{% url 'checkout' %}" class="btn-order">Оформити замовлення</a>
+{% else %}
+    <p>Ваш кошик порожній. Перейдіть до <a href="{% url 'menu' %}">меню</a>.</p>
+{% endif %}
+{% endblock %}
