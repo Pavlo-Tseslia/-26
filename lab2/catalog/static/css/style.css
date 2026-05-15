@@ -1,10 +1,19 @@
 /* Італійська палітра та шрифти */
+html {
+    scroll-behavior: smooth;
+    height: 100%; /* Потрібно для коректної роботи висоти body */
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     margin: 0;
     background-color: #fcfaf7;
     color: #333;
+    /* ФІКС ФУТЕРА: Робимо body флекс-контейнером на всю висоту */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* Навігація */
@@ -19,6 +28,10 @@ nav {
     display: flex;
     justify-content: center;
     gap: 20px;
+    /* ФІКС ШИРИНИ: Навігація не розповзається більше 1200px */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 nav a {
@@ -34,13 +47,20 @@ nav a:hover {
 }
 
 /* Контент */
+.content-wrapper {
+    /* ФІКС ФУТЕРА: Цей блок розтягується і штовхає футер вниз */
+    flex: 1;
+}
+
 .container {
-    max-width: 1000px;
+    /* ФІКС ШИРИНИ: Контент завжди по центру з відступами */
+    max-width: 1200px;
     margin: 20px auto;
     padding: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    width: 90%; /* Відступ від країв на великих екранах */
 }
 
 h1 {
@@ -53,44 +73,68 @@ h1 {
 /* Картки страв */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
     margin-top: 20px;
 }
 
 .product-card {
     border: 1px solid #ddd;
-    padding: 15px;
     border-radius: 10px;
     text-align: center;
-    transition: transform 0.2s;
+    overflow: hidden; /* Щоб фото не вилазило за закруглені кути */
+    background: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; /* ВИПРАВЛЕНО з crop на cover для кращого вигляду */
+}
+
+.product-info {
+    padding: 15px;
+}
+
+.price {
+    font-size: 1.2rem;
+    color: #cd212a;
+    font-weight: bold;
+    display: block;
+    margin: 10px 0;
 }
 
 .btn {
     display: inline-block;
-    background: #008c45;
+    background: #cd212a; /* Змінив на червоний для контрасту в картках */
     color: white;
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 5px;
-    margin-top: 10px;
+    transition: 0.3s;
+    border: none;
+    cursor: pointer;
 }
 
 .btn:hover {
-    background: #005a2d;
+    background: #a01a21;
 }
 
+/* Футер */
 footer {
     text-align: center;
-    padding: 20px;
+    padding: 25px;
     background: #333;
     color: white;
-    margin-top: 40px;
+    width: 100%;
 }
+
 /* Стилі для профілю та таблиць */
 .cart-table {
     width: 100%;
@@ -107,28 +151,24 @@ footer {
 .status-badge {
     background: #008c45;
     color: white;
-    padding: 5px 10px;
+    padding: 5px 12px;
     border-radius: 15px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
-/* Оновлення карток меню */
-.product-card img {
-    height: 200px;
-    object-fit: crop;
-}
-.product-info {
-    padding: 15px;
+/* Стиль для форми виходу (щоб виглядала як посилання) */
+.logout-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0;
 }
 
-.price {
-    font-size: 1.2rem;
+.logout-btn:hover {
     color: #cd212a;
-}
-.product-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }

@@ -1,26 +1,52 @@
 {% extends 'catalog/base.html' %}
 
 {% block content %}
-<h1>Ваш кошик</h1>
+<div class="container" style="padding: 20px;">
+    <h1>Ваш кошик</h1>
 
-{% if items %}
-    <table>
-        <tr>
-            <th>Страва</th>
-            <th>Кількість</th>
-            <th>Ціна</th>
-        </tr>
-        {% for item in items %}
-        <tr>
-            <td>{{ item.product.title }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.product.price }} грн</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <h3>Загальна сума: {{ total }} грн</h3>
-    <a href="{% url 'checkout' %}" class="btn-order">Оформити замовлення</a>
-{% else %}
-    <p>Ваш кошик порожній. Перейдіть до <a href="{% url 'menu' %}">меню</a>.</p>
-{% endif %}
+    {% if request.session.cart %}
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="border-bottom: 2px solid #eee; text-align: left;">
+                    <th style="padding: 10px;">Товар</th>
+                    <th style="padding: 10px;">Кількість</th>
+                    <th style="padding: 10px;">Ціна</th>
+                    <th style="padding: 10px;">Дія</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item_id, item in request.session.cart.items %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px;">{{ item.title }}</td>
+                    <td style="padding: 10px;">{{ item.quantity }} шт.</td>
+                    <td style="padding: 10px;">{{ item.price }} грн</td>
+                    <td style="padding: 10px;">
+                        <a href="{% url 'remove_from_cart' item_id %}" style="color: #cd212a; text-decoration: none; font-weight: bold;">
+                            ➖ Прибрати
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <a href="{% url 'menu' %}" class="btn" style="background: #666; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;">
+                ← Додати ще щось
+            </a>
+            <a href="{% url 'checkout' %}" class="btn" style="background: #28a745; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold;">
+                Оформити замовлення
+            </a>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 80px 20px;">
+            <h2 style="font-size: 2em;">Ваш кошик зараз порожній 🍕</h2>
+            <p style="color: #666;">Схоже, ви ще нічого не обрали.</p>
+            <br>
+            <a href="{% url 'menu' %}" class="btn" style="background: #cd212a; text-decoration: none; color: white; padding: 15px 30px; border-radius: 5px;">
+                Повернутися до меню
+            </a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

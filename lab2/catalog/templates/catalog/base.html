@@ -5,30 +5,56 @@
     <meta charset="UTF-8">
     <title>Bella Italia | {{ title }}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Стиль для плавності прокрутки */
+        html { scroll-behavior: smooth; }
+
+        /* Стиль для кнопки виходу у формі, щоб вона виглядала як посилання у меню */
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: bold;
+            padding: 0;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .logout-btn:hover {
+            color: #cd212a; /* Червоний колір при наведенні */
+        }
+    </style>
 </head>
 <body>
     <header>
         <nav>
-            <a href="{% url 'index' %}">Головна</a>
-            <a href="{% url 'menu' %}">Меню</a>
-            <a href="{% url 'about' %}">Про нас</a>
-            <a href="{% url 'contact' %}">Контакти</a>
+            <a href="{% url 'index' %}">ГОЛОВНА</a>
+            <a href="{% url 'menu' %}">МЕНЮ</a>
+            <a href="{% url 'about' %}">ПРО НАС</a>
+            <a href="{% url 'contact' %}">КОНТАКТИ</a>
+
             {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" style="color: #ffd700;">Кабінет ({{ user.username }})</a>
-                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                <a href="{% url 'profile' %}" style="color: #ffd700;">КАБІНЕТ ({{ user.username }})</a>
+                <form action="{% url 'logout' %}" method="post" style="display:inline; margin-left: 15px;">
                     {% csrf_token %}
-                    <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold;">ВИЙТИ</button>
+                    <button type="submit" class="logout-btn">ВИЙТИ</button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}">Увійти</a>
+                <a href="{% url 'login' %}">УВІЙТИ</a>
+                <a href="{% url 'register' %}" style="background: #cd212a; padding: 5px 10px; border-radius: 5px;">РЕЄСТРАЦІЯ</a>
             {% endif %}
-            <a href="{% url 'view_cart' %}">🛒 Кошик</a>
+
+            <a href="{% url 'view_cart' %}" style="margin-left: 20px;">🛒 КОШИК</a>
         </nav>
     </header>
 
-    <div class="container">
-        {% block content %}
-        {% endblock %}
+    <div class="content-wrapper">
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 
     <footer>

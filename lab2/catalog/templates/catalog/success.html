@@ -2,9 +2,9 @@
 
 {% block content %}
 <div style="text-align: center; padding: 50px 0;">
-    <h1 style="color: #008c45;">Дякуємо за замовлення! 🍕</h1>
+    <h2 style="color: #008c45;">Дякуємо за замовлення! 🍕</h2>
     <p style="font-size: 1.2rem;">Наш оператор зателефонує вам протягом 5 хвилин для підтвердження.</p>
-    <p>Номер вашого замовлення: <strong>#{{ order_id|default:"125" }}</strong></p>
+    <p>Номер вашого замовлення: <strong>#{{ order_number }}</strong></p>
     <br>
     <a href="{% url 'index' %}" class="btn">Повернутися на головну</a>
 </div>

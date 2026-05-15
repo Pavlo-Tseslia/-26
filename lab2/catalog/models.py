@@ -28,11 +28,22 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     session_key = models.CharField(max_length=40, null=True, blank=True)
 
-# Модель оформленого замовлення (для історії в кабінеті)
+# ОБ'ЄДНАНА МОДЕЛЬ ЗАМОВЛЕННЯ (Тепер лише одна версія)
 class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Клієнт")
-    items_json = models.TextField(verbose_name="Склад замовлення")  # Тут буде список: "Піца x2, Кола x1"
+    STATUS_CHOICES = [
+        ('pending', 'Прийнято'),
+        ('preparing', 'Готується'),
+        ('delivering', 'В дорозі (Кур\'єр)'),
+        ('ready', 'Готово до видачі'),
+        ('completed', 'Виконано'),
+        ('cancelled', 'Скасовано'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders', verbose_name="Клієнт")
+    items_json = models.TextField(verbose_name="Склад замовлення")
     total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Сума")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Статус")
+    delivery_type = models.CharField(max_length=20, default='delivery', verbose_name="Тип доставки")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата замовлення")
 
     class Meta:
@@ -40,4 +51,6 @@ class Order(models.Model):
         verbose_name_plural = "Замовлення"
 
     def __str__(self):
-        return f"Замовлення #{self.id} - {self.user.username}"
+        # Додано перевірку на випадок, якщо username недоступний
+        username = self.user.username if self.user else "Гість"
+        return f"Замовлення #{self.id} - {username}"

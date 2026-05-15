@@ -1,64 +1,48 @@
 {% extends 'catalog/base.html' %}
 
 {% block content %}
-<div class="profile-container">
+<div class="container" style="padding: 20px;">
     <h1>Особистий кабінет: {{ user.username }}</h1>
-    
-    <div class="user-info">
-        <p><strong>Email:</strong> {{ user.email|default:"Не вказано" }}</p>
-        <p><strong>Дата реєстрації:</strong> {{ user.date_joined|date:"d.m.Y" }}</p>
-    </div>
 
-    <hr>
-
-    <h2>Ваші замовлення</h2>
-    {% if orders %}
-        <table class="cart-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Дата</th>
-                    <th>Сума</th>
-                    <th>Статус</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <td>#{{ order.id }}</td>
-                    <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
-                    <td>{{ order.total_price }} грн</td>
-                    <td><span class="status-badge">Прийнято</span></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    {% if user.username == 'bob' %}
+        <h2 style="color: #cd212a;">🛡️ Панель Адміністратора (Bob)</h2>
+        <p>Усі активні замовлення в системі:</p>
     {% else %}
-        <p>У вас ще немає замовлень. Час замовити смачну піцу!</p>
-        <a href="{% url 'menu' %}" class="btn">Перейти до меню</a>
+        <h2>Ваші замовлення</h2>
     {% endif %}
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <tr style="background: #f8f8f8; border-bottom: 2px solid #ddd;">
+            <th style="padding: 10px;">ID</th>
+            <th style="padding: 10px;">Страви</th>
+            <th style="padding: 10px;">Сума</th>
+            <th style="padding: 10px;">Статус</th>
+            {% if user.username == 'bob' %}<th style="padding: 10px;">Керування</th>{% endif %}
+        </tr>
+        {% for order in orders %}
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px;">#{{ order.id }}</td>
+            <td style="padding: 10px;">{{ order.items_json }}</td>
+            <td style="padding: 10px;">{{ order.total_price }} грн</td>
+            <td style="padding: 10px;">
+                <span style="padding: 5px 10px; border-radius: 15px; background: #eee;">
+                    {{ order.get_status_display }}
+                </span>
+            </td>
+            {% if user.username == 'bob' %}
+            <td style="padding: 10px;">
+                <form method="POST" action="{% url 'update_order_status' order.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <select name="new_status" onchange="this.form.submit()" style="padding: 5px; border-radius: 5px;">
+                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Прийнято</option>
+                        <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Готується</option>
+                        <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Готово</option>
+                    </select>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
 </div>
 {% endblock %}
-<h3>Ваша історія замовлень</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>№</th>
-            <th>Дата</th>
-            <th>Страви</th>
-            <th>Сума</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in user.order_set.all %}
-        <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
-            <td>{{ order.items_json }}</td>
-            <td>{{ order.total_price }} грн</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4">Ви ще нічого не замовляли.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
